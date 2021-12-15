@@ -399,7 +399,13 @@ static void main_hook(void)
   gz_col_view();
   gz_hit_view();
   gz_cull_view();
+  gz_guard_view();
+
+  /* execute and draw path view */
   gz_path_view();
+
+  /* execute and draw waterbox view */
+  gz_water_view();
 
   /* execute free camera in view mode */
   gz_free_view();
@@ -716,6 +722,7 @@ static void state_main_hook(void)
       gz.frame_counter = 0;
       cpu_reset();
     }
+    gz.frame_ran = 1;
   }
   else {
     z64_gfx_t *gfx = z64_ctxt.gfx;
@@ -753,6 +760,7 @@ static void state_main_hook(void)
     --z64_ctxt.state_frames;
     /* do not execute an ocarina frame */
     gz.frame_flag = 0;
+    gz.frame_ran = 0;
   }
 }
 
@@ -1048,12 +1056,15 @@ static void init(void)
   for (int i = 0; i < SETTINGS_LOG_MAX; ++i)
     gz.log[i].msg = NULL;
   gz.selected_actor.ptr = NULL;
+  gz.selected_actor.id = -1;
+  gz.selected_actor.type = -1;
   gz.entrance_override_once = 0;
   gz.entrance_override_next = 0;
   gz.next_entrance = -1;
   gz.day_time_prev = z64_file.day_time;
   gz.target_day_time = -1;
   gz.frames_queued = -1;
+  gz.frame_ran = 1;
   gz.movie_state = MOVIE_IDLE;
   vector_init(&gz.movie_input, sizeof(struct movie_input));
   vector_init(&gz.movie_seed, sizeof(struct movie_seed));
@@ -1082,8 +1093,10 @@ static void init(void)
   gz.col_view_state = COLVIEW_INACTIVE;
   gz.hit_view_state = HITVIEW_INACTIVE;
   gz.cull_view_state = CULLVIEW_INACTIVE;
-  gz.path_view_state = PATHVIEW_INACTIVE;
   gz.noclip_on = 0;
+  gz.water_view_state = WATERVIEW_INACTIVE;
+  gz.path_view_state = PATHVIEW_INACTIVE;
+  gz.guard_view_state = GUARDVIEW_INACTIVE;
   gz.hide_rooms = 0;
   gz.hide_actors = 0;
   gz.free_cam = 0;
@@ -1140,9 +1153,10 @@ static void init(void)
     menu_add_submenu(&menu, 0, 5, gz_equips_menu(), "equips");
     menu_add_submenu(&menu, 0, 6, gz_file_menu(), "file");
     menu_add_submenu(&menu, 0, 7, gz_macro_menu(), "macro");
-    menu_add_submenu(&menu, 0, 8, &watches, "watches");
-    menu_add_submenu(&menu, 0, 9, gz_debug_menu(), "debug");
-    menu_add_submenu(&menu, 0, 10, gz_settings_menu(), "settings");
+    menu_add_submenu(&menu, 0, 8, gz_trainer_menu(), "trainer");
+    menu_add_submenu(&menu, 0, 9, &watches, "watches");
+    menu_add_submenu(&menu, 0, 10, gz_debug_menu(), "debug");
+    menu_add_submenu(&menu, 0, 11, gz_settings_menu(), "settings");
 
     /* populate watches menu */
     watches.selector = menu_add_submenu(&watches, 0, 0, NULL, "return");

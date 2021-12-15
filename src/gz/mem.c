@@ -9,9 +9,11 @@
 #include "input.h"
 #include "mem.h"
 #include "menu.h"
+#include "watchlist.h"
 #include "resource.h"
 #include "util.h"
 #include "watchlist.h"
+#include "gz.h"
 
 #define MEM_VIEW_ROWS     16
 #define MEM_VIEW_COLS     8
@@ -244,6 +246,9 @@ static void add_watch_proc(struct menu_item *item, void *data)
     type = WATCH_TYPE_X32;
   if (watchlist_add(gz.menu_watchlist, address, type) >= 0)
     menu_enter_top(menu_return_top(item->owner), gz.menu_watches);
+  watchlist_add_debug_address(gz.menu_watchlist, address);
+  menu_return_top(gz.menu_main);
+  menu_enter(gz.menu_main, gz.menu_watches);
 }
 
 void mem_menu_create(struct menu *menu)

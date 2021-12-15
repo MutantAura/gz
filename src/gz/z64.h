@@ -994,7 +994,11 @@ struct z64_actor_s
 typedef struct
 {
   z64_actor_t       common;                   /* 0x0000 */
-  char              unk_0x13C[0x02F8];        /* 0x013C */
+  char              unk_0x13C[0x0070];        /* 0x013C */
+  uint32_t          current_animation;        /* 0x01AC */
+  char              unk_0x1B0[0x000C];        /* 0x01B0 */
+  float             animation_timer;          /* 0x01BC */
+  char              unk_0x1C0[0x0274];        /* 0x01C0 */
   uint8_t           action;                   /* 0x0434 */
   char              unk_0x435[0x0237];        /* 0x0435 */
   uint32_t          state_flags_1;            /* 0x066C */
@@ -1574,6 +1578,13 @@ typedef struct
   z64_xyz_t        *points;
 } z64_path_t;
 
+typedef struct
+{
+  int8_t            numpoints;
+  // segment address to z64_xyz_t points array
+  uint32_t          points;
+} z64_path_t;
+
 /* game context */
 typedef struct
 {
@@ -1581,9 +1592,16 @@ typedef struct
   uint16_t          scene_index;              /* 0x000A4 */
   char              unk_0xA6[0x000A];         /* 0x000A6 */
   void             *scene_file;               /* 0x000B0 */
-  char              unk_0xB4[0x0004];         /* 0x000B4 */
-  z64_view_t        view;                     /* 0x000B8 */
-  char              unk_0xE0[0x0090];         /* 0x001E0 */
+  char              unk_0xB4[0x000C];         /* 0x000B4 */
+  uint32_t          screen_top;               /* 0x000C0 */
+  uint32_t          screen_bottom;            /* 0x000C4 */
+  uint32_t          screen_left;              /* 0x000C8 */
+  uint32_t          screen_right;             /* 0x000CC */
+  float             camera_distance;          /* 0x000D0 */
+  float             fog_distance;             /* 0x000D4 */
+  float             z_distance;               /* 0x000D8 */
+  float             unk_0xDC;                 /* 0x000DC */
+  char              unk_0xE0[0x0190];         /* 0x000E0 */
   z64_actor_t      *camera_focus;             /* 0x00270 */
   char              unk_0x274[0x00AE];        /* 0x00274 */
   uint16_t          camera_mode;              /* 0x00322 */
@@ -2287,6 +2305,7 @@ z64_extern  uint32_t              z64_afx_counter;
 z64_extern  uint8_t               z64_afx_cmd_write_pos;
 z64_extern  uint8_t               z64_afx_cmd_read_pos;
 z64_extern  z64_afx_cmd_t         z64_afx_cmd_buf[0x100];
+z64_extern  z64_view_t            z64_view;
 z64_extern  char                  z64_zimg[];
 z64_extern  char                  z64_disp[];
 z64_extern  z64_ctxt_t            z64_ctxt;

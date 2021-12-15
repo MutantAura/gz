@@ -533,6 +533,7 @@ static void mkdir_proc(struct menu_item *item, void *data)
 static void gf_menu_init(void)
 {
   static _Bool ready = 0;
+  gf_dirty_name = 0;
   if (!ready) {
     ready = 1;
     /* initialize data */

@@ -41,10 +41,38 @@ enum hit_view_state
   HITVIEW_STOPPING,
 };
 
+enum path_view_state
+{
+  PATHVIEW_INACTIVE,
+  PATHVIEW_START,
+  PATHVIEW_ACTIVE,
+  PATHVIEW_BEGIN_STOP,
+  PATHVIEW_STOP,
+};
+
+enum water_view_state
+{
+  WATERVIEW_INACTIVE,
+  WATERVIEW_START,
+  WATERVIEW_ACTIVE,
+  WATERVIEW_BEGIN_STOP,
+  WATERVIEW_STOP,
+};
+
+enum guard_view_state
+{
+  GUARDVIEW_INACTIVE,
+  GUARDVIEW_START,
+  GUARDVIEW_ACTIVE,
+  GUARDVIEW_BEGIN_STOP,
+  GUARDVIEW_STOP,
+};
+
 enum cull_view_state
 {
   CULLVIEW_INACTIVE,
   CULLVIEW_START,
+  CULLVIEW_BEGIN_ACTIVE,
   CULLVIEW_ACTIVE,
   CULLVIEW_STOP,
   CULLVIEW_STOPPING,
@@ -148,6 +176,9 @@ struct selected_actor
   z64_actor_t          *ptr;
   int32_t               id;
   int32_t               type;
+  z64_xyzf_t            last_A[4];
+  z64_xyzf_t            last_B[4];
+  z64_xyzf_t            last_C[4];
 };
 
 struct gz
@@ -168,6 +199,7 @@ struct gz
   uint16_t              day_time_prev;
   int                   target_day_time;
   int32_t               frames_queued;
+  _Bool                 frame_ran;
   struct zu_disp_p      z_disp_p;
   uint32_t              disp_hook_size[4];
   uint32_t              disp_hook_p[4];
@@ -203,6 +235,8 @@ struct gz
   enum hit_view_state   hit_view_state;
   enum cull_view_state  cull_view_state;
   enum path_view_state  path_view_state;
+  enum guard_view_state guard_view_state;
+  enum water_view_state water_view_state;
   _Bool                 noclip_on;
   _Bool                 hide_rooms;
   _Bool                 hide_actors;
@@ -254,6 +288,7 @@ void          command_playmacro(void);
 void          command_colview(void);
 void          command_hitview(void);
 void          command_pathview(void);
+void          command_waterview(void);
 void          command_resetlag(void);
 void          command_togglewatches(void);
 void          command_timer(void);
@@ -272,6 +307,9 @@ void          gz_vcont_get(int port, z64_input_t *input);
 
 void          gz_col_view(void);
 void          gz_hit_view(void);
+void          gz_path_view(void);
+void          gz_water_view(void);
+void          gz_guard_view(void);
 void          gz_cull_view(void);
 void          gz_path_view(void);
 
@@ -288,6 +326,7 @@ struct menu  *gz_inventory_menu(void);
 struct menu  *gz_equips_menu(void);
 struct menu  *gz_file_menu(void);
 struct menu  *gz_macro_menu(void);
+struct menu  *gz_trainer_menu(void);
 struct menu  *gz_debug_menu(void);
 struct menu  *gz_settings_menu(void);
 
